@@ -3,6 +3,9 @@
     package="com.github.paolorotolo.appintroexample" >
 
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -21,16 +24,39 @@
         </activity>
         <activity
             android:name=".DefaultIntro"
-            android:label="@string/title_activity_default_intro" >
+            android:label="@string/title_activity_default_intro"
+            android:theme="@style/FullscreenTheme">
         </activity>
         <activity
             android:name=".CustomIntro"
-            android:label="@string/title_activity_custom_intro" >
+            android:label="@string/title_activity_custom_intro"
+            android:theme="@style/FullscreenTheme">
         </activity>
+        <activity android:name=".PermissionsIntro"
+            android:label="@string/title_activity_permissions_intro"
+            android:theme="@style/FullscreenTheme"/>
+        <activity
+            android:name=".PermissionsIntro2"
+            android:label="@string/title_activity_permissions_intro"
+            android:theme="@style/FullscreenTheme" />
         <activity android:name=".SecondLayoutIntro"
-            android:label="@string/title_activity_second_intro"/>
+            android:label="@string/title_activity_second_intro"
+            android:theme="@style/FullscreenTheme"/>
+        <activity android:name=".DisableSwipeIntro1"
+            android:label="@string/title_activity_default_intro_disable"
+            android:theme="@style/FullscreenTheme"/>
+        <activity android:name=".DisableSwipeIntro2"
+            android:label="@string/title_activity_second_intro_disable"
+            android:theme="@style/FullscreenTheme"/>
         <activity android:name=".animations.CustomAnimation" />
         <activity android:name=".animations.FadeAnimation" />
+        <activity android:name=".animations.ZoomAnimation" />
+        <activity android:name=".animations.DepthAnimation" />
+        <activity android:name=".animations.FlowAnimation" />
+        <activity android:name=".animations.SlideOverAnimation" />
+        <activity android:name=".indicators.ProgressIndicator" />
+        <activity android:name=".indicators.CustomIndicator" />
+        <activity android:name=".indicators.CustomColorIndicator" />
     </application>
 
 </manifest>
