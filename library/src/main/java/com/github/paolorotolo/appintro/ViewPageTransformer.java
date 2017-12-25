@@ -1,6 +1,5 @@
 package com.github.paolorotolo.appintro;
 
-import android.annotation.SuppressLint;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
@@ -16,7 +15,6 @@ class ViewPageTransformer implements ViewPager.PageTransformer {
         mTransformType = transformType;
     }
 
-    @SuppressLint("NewApi")
     public void transformPage(View page, float position) {
         final float alpha;
         final float scale;

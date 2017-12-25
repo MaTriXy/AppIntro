@@ -22,11 +22,18 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
+import com.github.paolorotolo.appintro.util.LayoutUtil;
 import com.github.paolorotolo.appintro.util.LogHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+
+import static com.github.paolorotolo.appintro.ViewPageTransformer.TransformType.DEPTH;
+import static com.github.paolorotolo.appintro.ViewPageTransformer.TransformType.FADE;
+import static com.github.paolorotolo.appintro.ViewPageTransformer.TransformType.FLOW;
+import static com.github.paolorotolo.appintro.ViewPageTransformer.TransformType.SLIDE_OVER;
+import static com.github.paolorotolo.appintro.ViewPageTransformer.TransformType.ZOOM;
 
 public abstract class AppIntroBase extends AppCompatActivity implements
         AppIntroViewPager.OnNextPageRequestedListener {
@@ -57,12 +64,14 @@ public abstract class AppIntroBase extends AppCompatActivity implements
     protected View doneButton;
     protected View skipButton;
     protected View backButton;
+    protected FrameLayout indicatorContainer;
     protected int savedCurrentItem;
     protected ArrayList<PermissionObject> permissionsArray = new ArrayList<>();
     protected boolean isVibrateOn = false;
     protected boolean baseProgressButtonEnabled = true;
     protected boolean progressButtonEnabled = true;
     protected boolean skipButtonEnabled = true;
+    protected boolean pagerIndicatorEnabled = true;
     protected boolean isWizardMode = false;
     protected boolean showBackButtonWithDone = false;
     private GestureDetectorCompat gestureDetector;
@@ -91,7 +100,7 @@ public abstract class AppIntroBase extends AppCompatActivity implements
         checkButton(skipButton, "skip");
         checkButton(backButton, "back");
 
-        FrameLayout frameLayout = (FrameLayout) findViewById(R.id.bottomContainer);
+        FrameLayout frameLayout = findViewById(R.id.bottomContainer);
         if (frameLayout != null && isRtl()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
                 frameLayout.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
@@ -103,7 +112,7 @@ public abstract class AppIntroBase extends AppCompatActivity implements
 
         mVibrator = (Vibrator) this.getSystemService(VIBRATOR_SERVICE);
         mPagerAdapter = new PagerAdapter(getSupportFragmentManager(), fragments);
-        pager = (AppIntroViewPager) findViewById(R.id.view_pager);
+        pager = findViewById(R.id.view_pager);
 
         if (doneButton != null) {
             doneButton.setOnClickListener(new View.OnClickListener() {
@@ -113,12 +122,13 @@ public abstract class AppIntroBase extends AppCompatActivity implements
                         mVibrator.vibrate(vibrateIntensity);
                     }
 
-                    Fragment currentFragment = mPagerAdapter.getItem(pager.getCurrentItem());
                     boolean isSlideChangingAllowed = handleBeforeSlideChanged();
 
                     if (isSlideChangingAllowed) {
-                        handleSlideChanged(currentFragment, null);
-                        onDonePressed(currentFragment);
+                        // Changing slide is handled by permission result
+                        if (!checkAndRequestPermissions()) {
+                            changeSlide(true);
+                        }
                     } else {
                         handleIllegalSlideChangeAttempt();
                     }
@@ -189,7 +199,15 @@ public abstract class AppIntroBase extends AppCompatActivity implements
         pager.post(new Runnable() {
             @Override
             public void run() {
-                handleSlideChanged(null, mPagerAdapter.getItem(pager.getCurrentItem()));
+                Fragment fragment = mPagerAdapter.getItem(pager.getCurrentItem());
+
+                // Fragment is null when no slides are passed to AppIntro
+                if (fragment != null) {
+                    handleSlideChanged(null, mPagerAdapter.getItem(pager.getCurrentItem()));
+                } else {
+                    // Close the intro if there are no slides to show
+                    finish();
+                }
             }
         });
 
@@ -237,6 +255,7 @@ public abstract class AppIntroBase extends AppCompatActivity implements
         outState.putBoolean("nextEnabled", pager.isPagingEnabled());
         outState.putBoolean("nextPagingEnabled", pager.isNextPagingEnabled());
         outState.putBoolean("skipButtonEnabled", skipButtonEnabled);
+        outState.putBoolean("pagerIndicatorEnabled", pagerIndicatorEnabled);
         outState.putInt("lockPage", pager.getLockPage());
         outState.putInt("currentItem", pager.getCurrentItem());
 
@@ -252,6 +271,7 @@ public abstract class AppIntroBase extends AppCompatActivity implements
         this.baseProgressButtonEnabled = savedInstanceState.getBoolean("baseProgressButtonEnabled");
         this.progressButtonEnabled = savedInstanceState.getBoolean("progressButtonEnabled");
         this.skipButtonEnabled = savedInstanceState.getBoolean("skipButtonEnabled");
+        this.pagerIndicatorEnabled = savedInstanceState.getBoolean("pagerIndicatorEnabled");
         this.savedCurrentItem = savedInstanceState.getInt("currentItem");
         pager.setPagingEnabled(savedInstanceState.getBoolean("nextEnabled"));
         pager.setNextPagingEnabled(savedInstanceState.getBoolean("nextPagingEnabled"));
@@ -277,7 +297,7 @@ public abstract class AppIntroBase extends AppCompatActivity implements
         if (mController == null)
             mController = new DefaultIndicatorController();
 
-        FrameLayout indicatorContainer = (FrameLayout) findViewById(R.id.indicator_container);
+        indicatorContainer = findViewById(R.id.indicator_container);
         indicatorContainer.addView(mController.newInstance(this));
 
         mController.initialize(slidesNumber);
@@ -342,6 +362,7 @@ public abstract class AppIntroBase extends AppCompatActivity implements
         }
 
         onSlideChanged(oldFragment, newFragment);
+        updatePagerIndicatorState();
     }
 
     /**
@@ -358,6 +379,25 @@ public abstract class AppIntroBase extends AppCompatActivity implements
      */
     protected void onPageSelected(int position) {
         // Empty method
+    }
+
+    /**
+     * Setting this to display or hide the Pager Indicator. This is a static setting and
+     * view state is maintained across slides until explicitly changed.
+     *
+     * @param showIndicator Set true to display. false to hide.
+     */
+    public void showPagerIndicator(boolean showIndicator) {
+        this.pagerIndicatorEnabled = showIndicator;
+    }
+
+    /**
+     * Check if the Pager Indicator is enabled
+     *
+     * @return true if yes, false if not.
+     */
+    public boolean isPagerIndicatorEnabled() {
+        return pagerIndicatorEnabled;
     }
 
     /**
@@ -560,7 +600,7 @@ public abstract class AppIntroBase extends AppCompatActivity implements
     public boolean onKeyDown(int code, KeyEvent event) {
         if (code == KeyEvent.KEYCODE_ENTER || code == KeyEvent.KEYCODE_BUTTON_A ||
                 code == KeyEvent.KEYCODE_DPAD_CENTER) {
-            ViewPager vp = (ViewPager) this.findViewById(R.id.view_pager);
+            ViewPager vp = this.findViewById(R.id.view_pager);
             if (vp.getCurrentItem() == vp.getAdapter().getCount() - 1) {
                 onDonePressed(fragments.get(vp.getCurrentItem()));
             } else {
@@ -694,35 +734,35 @@ public abstract class AppIntroBase extends AppCompatActivity implements
      * Sets the animation of the intro to a fade animation
      */
     public void setFadeAnimation() {
-        pager.setPageTransformer(true, new ViewPageTransformer(ViewPageTransformer.TransformType.FADE));
+        pager.setPageTransformer(true, new ViewPageTransformer(FADE));
     }
 
     /**
      * Sets the animation of the intro to a zoom animation
      */
     public void setZoomAnimation() {
-        pager.setPageTransformer(true, new ViewPageTransformer(ViewPageTransformer.TransformType.ZOOM));
+        pager.setPageTransformer(true, new ViewPageTransformer(ZOOM));
     }
 
     /**
      * Sets the animation of the intro to a flow animation
      */
     public void setFlowAnimation() {
-        pager.setPageTransformer(true, new ViewPageTransformer(ViewPageTransformer.TransformType.FLOW));
+        pager.setPageTransformer(true, new ViewPageTransformer(FLOW));
     }
 
     /**
      * Sets the animation of the intro to a Slide Over animation
      */
     public void setSlideOverAnimation() {
-        pager.setPageTransformer(true, new ViewPageTransformer(ViewPageTransformer.TransformType.SLIDE_OVER));
+        pager.setPageTransformer(true, new ViewPageTransformer(SLIDE_OVER));
     }
 
     /**
      * Sets the animation of the intro to a Depth animation
      */
     public void setDepthAnimation() {
-        pager.setPageTransformer(true, new ViewPageTransformer(ViewPageTransformer.TransformType.DEPTH));
+        pager.setPageTransformer(true, new ViewPageTransformer(DEPTH));
     }
 
     /**
@@ -804,7 +844,7 @@ public abstract class AppIntroBase extends AppCompatActivity implements
     /**
      * Specifies whether to enable the non-sticky immersive mode.
      * This is a shorthand method for {@link #setImmersiveMode(boolean, boolean)} the second parameter set to false.
-     * If you want to enable the sticky immersive mode (transcluent bars), use {@link #setImmersiveMode(boolean, boolean)} instead.
+     * If you want to enable the sticky immersive mode (translucent bars), use {@link #setImmersiveMode(boolean, boolean)} instead.
      * Note that immersive mode is only supported on Kitkat and newer.
      *
      * @param isEnabled Whether the immersive mode (non-sticky) should be enabled or not.
@@ -853,6 +893,54 @@ public abstract class AppIntroBase extends AppCompatActivity implements
         }
     }
 
+    private void changeSlide(boolean isLastSlide){
+        if (isLastSlide) {
+            Fragment currentFragment = mPagerAdapter.getItem(pager.getCurrentItem());
+            handleSlideChanged(currentFragment, null);
+            onDonePressed(currentFragment);
+        } else {
+            pager.goToNextSlide();
+            onNextPressed();
+        }
+    }
+
+    // Returns true if a permission has been requested
+    private boolean checkAndRequestPermissions(){
+        if (!permissionsArray.isEmpty()) {
+            boolean requestPermission = false;
+            int permissionPosition = 0;
+
+            //noinspection LoopStatementThatDoesntLoop
+            for (int i = 0; i < permissionsArray.size(); i++) {
+                requestPermission =
+                        pager.getCurrentItem() + 1 == permissionsArray.get(i).getPosition();
+                permissionPosition = i;
+                break;
+            }
+            if (requestPermission) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    requestPermissions(permissionsArray.get(permissionPosition).getPermission(),
+                            PERMISSIONS_REQUEST_ALL_PERMISSIONS);
+                    permissionsArray.remove(permissionPosition);
+
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private void updatePagerIndicatorState(){
+        if (indicatorContainer != null) {
+            if (pagerIndicatorEnabled) {
+                indicatorContainer.setVisibility(View.VISIBLE);
+            } else {
+                indicatorContainer.setVisibility(View.INVISIBLE);
+            }
+        }
+    }
+
     public void askForPermissions(String[] permissions, int slidesNumber) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (slidesNumber == 0) {
@@ -871,10 +959,11 @@ public abstract class AppIntroBase extends AppCompatActivity implements
 
         switch (requestCode) {
             case PERMISSIONS_REQUEST_ALL_PERMISSIONS:
-                if (isRtl()) {
-                    pager.setCurrentItem(pager.getCurrentItem() - 1);
+                // Check if next slide is the last one
+                if (pager.getCurrentItem()+1 == slidesNumber) {
+                    changeSlide(true);
                 } else {
-                    pager.setCurrentItem(pager.getCurrentItem() + 1);
+                    changeSlide(false);
                 }
                 break;
             default:
@@ -883,7 +972,7 @@ public abstract class AppIntroBase extends AppCompatActivity implements
     }
 
     protected boolean isRtl() {
-        return AppIntroViewPager.isRtl(getResources());
+        return LayoutUtil.isRtl(getResources());
     }
 
     private final class NextButtonOnClickListener implements View.OnClickListener {
@@ -897,29 +986,9 @@ public abstract class AppIntroBase extends AppCompatActivity implements
 
             // Check if changing to the next slide is allowed
             if (isSlideChangingAllowed) {
-
-                boolean requestPermission = false;
-                int position = 0;
-
-                for (int i = 0; i < permissionsArray.size(); i++) {
-                    requestPermission =
-                            pager.getCurrentItem() + 1 == permissionsArray.get(i).getPosition();
-                    position = i;
-                    break;
-                }
-
-                if (requestPermission) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        requestPermissions(permissionsArray.get(position).getPermission(),
-                                PERMISSIONS_REQUEST_ALL_PERMISSIONS);
-                        permissionsArray.remove(position);
-                    } else {
-                        pager.goToNextSlide();
-                        onNextPressed();
-                    }
-                } else {
-                    pager.goToNextSlide();
-                    onNextPressed();
+                // Changing slide is handled by permission result
+                if (!checkAndRequestPermissions()) {
+                    changeSlide(false);
                 }
             } else {
                 handleIllegalSlideChangeAttempt();
@@ -989,6 +1058,9 @@ public abstract class AppIntroBase extends AppCompatActivity implements
                 }
             }
             currentlySelectedItem = position;
+
+            // Check new state of pagerIndicator
+            updatePagerIndicatorState();
         }
 
         @Override

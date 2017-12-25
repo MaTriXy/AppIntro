@@ -1,4 +1,4 @@
-[![Maven Central](https://img.shields.io/badge/maven%20central-appintro-green.svg)](http://search.maven.org/#browse%7C2137414099)
+[![](https://jitpack.io/v/apl-devs/appintro.svg)](https://jitpack.io/#apl-devs/appintro)
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-AppIntro-green.svg?style=flat)](https://android-arsenal.com/details/1/1939)
 [![Android Gems](http://www.android-gems.com/badge/PaoloRotolo/AppIntro.svg?branch=master)](http://www.android-gems.com/lib/PaoloRotolo/AppIntro)
 
@@ -18,16 +18,23 @@ AppIntro is an Android Library that helps you make a **cool intro** for your app
 
 ### Basic usage
 
-Add this to your **build.gradle**:
+1. **Add the JitPack repository to your build file**
 
-```java
-repositories {
-    mavenCentral()
-}
+ Add it in your root build.gradle at the end of repositories:
+```gradle
+	allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+```
 
-dependencies {
-    compile 'com.github.paolorotolo:appintro:4.1.0'
-}
+2. **Add the dependency**
+```gradle
+	dependencies {
+	        compile 'com.github.apl-devs:appintro:v4.2.2'
+	}
 ```
 
 Create a new **Activity that extends AppIntro**:
@@ -226,6 +233,8 @@ protected void onCreate(@Nullable Bundle savedInstanceState) {
 
 **NOTE:** It is advised that you only put one permission in the String array unless you want the app to ask for multiple permissions on the same slide.
 
+**NOTE 2:** Requesting permissions automatically disables sliding, and users will have to result to pressing the buttons. Please do not open any issues regarding this, as they will be immmediately closed. Thanks!
+
 #### Slide Policies
 
 If you want to restrict navigation between your slides (i.e. the user has to toggle a checkbox in order to continue), our **Slide Policy** feature might help you.
@@ -323,3 +332,5 @@ If you are using AppIntro in your app and would like to be listed here, please l
  * [SelfMote - Wireless Remote app](https://play.google.com/store/apps/details?id=com.dmicse.selfmote.free)
  * [Boo Music Player](https://play.google.com/store/apps/details?id=cdn.BooPlayer)
  * [BeatPrompter](https://play.google.com/store/apps/details?id=com.stevenfrew.beatprompter)
+ * [Orario Treni Trenitalia](https://play.google.com/store/apps/details?id=com.jaus.albertogiunta.justintrain_oraritreni)
+ * [Tipsy for Gardaland](https://play.google.com/store/apps/details?id=com.MonkeyLab.MyGardaland&hl=it)

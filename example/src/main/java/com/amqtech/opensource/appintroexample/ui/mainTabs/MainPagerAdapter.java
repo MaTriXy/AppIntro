@@ -1,9 +1,8 @@
 package com.amqtech.opensource.appintroexample.ui.mainTabs;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-
-import com.amqtech.opensource.appintroexample.util.FragmentStatePagerAdapter;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 /**
  * Created by andrew on 11/17/16.
@@ -11,8 +10,8 @@ import com.amqtech.opensource.appintroexample.util.FragmentStatePagerAdapter;
 
 public class MainPagerAdapter extends FragmentStatePagerAdapter {
 
-    CharSequence Titles[]; // This will Store the Titles of the Tabs which are Going to be passed when PermsPagerAdapter is created
-    int NumbOfTabs; // Store the number of tabs, this will also be passed when the PermsPagerAdapter is created
+    private CharSequence Titles[]; // This will Store the Titles of the Tabs which are Going to be passed when PermsPagerAdapter is created
+    private int NumbOfTabs; // Store the number of tabs, this will also be passed when the PermsPagerAdapter is created
 
 
     // Build a Constructor and assign the passed Values to appropriate values in the class

@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.support.annotation.ColorInt;
+import android.widget.LinearLayout;
 
 import com.github.paolorotolo.appintro.util.LogHelper;
 
@@ -21,7 +23,7 @@ public abstract class AppIntro2 extends AppIntroBase {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        backgroundFrame = (FrameLayout) findViewById(R.id.background);
+        backgroundFrame = findViewById(R.id.background);
     }
 
     @Override
@@ -38,6 +40,16 @@ public abstract class AppIntro2 extends AppIntroBase {
     public void showDoneButton(boolean showDone) {
         setProgressButtonEnabled(showDone);
     }
+    
+    /**
+     * Override viewpager bar color
+     *
+     * @param color your color resource
+     */
+    public void setBarColor(@ColorInt final int color) {
+        LinearLayout bottomBar = findViewById(R.id.bottom);
+        bottomBar.setBackgroundColor(color);
+    }
 
     /**
      * Override Next button
@@ -45,7 +57,7 @@ public abstract class AppIntro2 extends AppIntroBase {
      * @param imageSkipButton your drawable resource
      */
     public void setImageSkipButton(final Drawable imageSkipButton) {
-        final ImageButton nextButton = (ImageButton) findViewById(R.id.skip);
+        final ImageButton nextButton = findViewById(R.id.skip);
         nextButton.setImageDrawable(imageSkipButton);
 
     }
