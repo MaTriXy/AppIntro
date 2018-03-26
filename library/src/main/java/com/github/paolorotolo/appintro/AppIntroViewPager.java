@@ -40,7 +40,7 @@ public final class AppIntroViewPager extends ViewPager {
     }
 
     public void goToNextSlide() {
-        if (LayoutUtil.isRtl(getResources())) {
+        if (LayoutUtil.isRtl(getContext())) {
             setCurrentItem(getCurrentItem() - 1);
         } else {
             setCurrentItem(getCurrentItem() + 1);
@@ -49,7 +49,7 @@ public final class AppIntroViewPager extends ViewPager {
 
     public void goToPreviousSlide() {
         try {
-            if (LayoutUtil.isRtl(getResources())) {
+            if (LayoutUtil.isRtl(getContext())) {
                 setCurrentItem(getCurrentItem() + 1);
             } else {
                 setCurrentItem(getCurrentItem() - 1);
@@ -61,7 +61,7 @@ public final class AppIntroViewPager extends ViewPager {
     }
 
     public boolean isFirstSlide(int size) {
-        if (LayoutUtil.isRtl(getResources())) {
+        if (LayoutUtil.isRtl(getContext())) {
             return getCurrentItem() - size + 1 == 0;
         } else {
             return getCurrentItem() == 0;
@@ -88,6 +88,11 @@ public final class AppIntroViewPager extends ViewPager {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
+        // If paging is disabled we should ignore any viewpager touch (also, not display any error message)
+        if (!pagingEnabled) {
+            return false;
+        }
+
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             currentTouchDownX = event.getX();
             return super.onInterceptTouchEvent(event);
@@ -102,10 +107,16 @@ public final class AppIntroViewPager extends ViewPager {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        // If paging is disabled we should ignore any viewpager touch (also, not display any error message)
+        if (!pagingEnabled) {
+            return false;
+        }
+
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             currentTouchDownX = event.getX();
             return super.onTouchEvent(event);
         }
+
         // Check if we should handle the touch event
         else if (checkPagingState(event) || checkCanRequestNextPage(event)) {
             // Call callback method if threshold has been reached
@@ -117,10 +128,6 @@ public final class AppIntroViewPager extends ViewPager {
     }
 
     private boolean checkPagingState(MotionEvent event) {
-        if (!pagingEnabled) {
-            return true;
-        }
-
         if (!nextPagingEnabled) {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
                 currentTouchDownX = event.getX();
@@ -191,7 +198,7 @@ public final class AppIntroViewPager extends ViewPager {
         } catch (Exception exception) {
             exception.printStackTrace();
         }
-        if (LayoutUtil.isRtl(getResources())) {
+        if (LayoutUtil.isRtl(getContext())) {
             return !result;
         } else {
             return result;
