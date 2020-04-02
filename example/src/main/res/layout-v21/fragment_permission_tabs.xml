@@ -4,16 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.amqtech.opensource.appintroexample.ui.MainActivity">
+    tools:context="com.github.appintro.example.ui.MainActivity">
 
-    <com.amqtech.opensource.appintroexample.util.TabLayout
+    <com.github.appintro.example.util.TabLayout
         android:id="@+id/permTabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
         android:elevation="4dp" />
 
-    <android.support.v4.view.ViewPager
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/permPager"
         android:layout_width="match_parent"
         android:layout_height="0dp"

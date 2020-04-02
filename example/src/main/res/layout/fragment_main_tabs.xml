@@ -4,13 +4,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.amqtech.opensource.appintroexample.util.TabLayout
+    <com.github.appintro.example.util.TabLayout
         android:id="@+id/mainTabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary" />
 
-    <android.support.v4.view.ViewPager
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/mainPager"
         android:layout_width="match_parent"
         android:layout_height="0dp"

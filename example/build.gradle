@@ -1,17 +1,18 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.2"
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
 
     defaultConfig {
-        applicationId "com.amqtech.opensource.appintroexample"
+        applicationId "com.github.appintro.example.appintroexample"
         minSdkVersion 14
-        targetSdkVersion 27
+        targetSdkVersion 29
         versionCode 2
         versionName "1.0.1"
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
@@ -26,38 +27,17 @@ android {
     lintOptions {
         warning 'MissingTranslation'
     }
-
-    sourceSets {
-
-        test.setRoot('test')
-        instrumentTest.setRoot('tests')
-    }
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:27.0.2'
-    compile project(':library')
+    implementation project(':appintro')
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.annotation:annotation:1.1.0'
 
-    compile('com.mikepenz:materialdrawer:5.9.1@aar') {
-        transitive = true
-    }
-
-    // test dependencies
-    androidTestCompile('com.android.support.test:runner:0.5') {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    }
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2') {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    }
+    implementation "com.mikepenz:materialdrawer:6.1.2"
+    implementation "androidx.core:core-ktx:1.1.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
-
-configurations.all {
-    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-        def requested = details.requested
-        if (requested.group == 'com.android.support') {
-            if (!requested.name.startsWith("multidex")) {
-                details.useVersion '27.0.2'
-            }
-        }
-    }
+repositories {
+    mavenCentral()
 }

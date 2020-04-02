@@ -1,14 +1,9 @@
-[![](https://jitpack.io/v/apl-devs/appintro.svg)](https://jitpack.io/#apl-devs/appintro)
-[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-AppIntro-green.svg?style=flat)](https://android-arsenal.com/details/1/1939)
-[![Android Gems](http://www.android-gems.com/badge/PaoloRotolo/AppIntro.svg?branch=master)](http://www.android-gems.com/lib/PaoloRotolo/AppIntro)
-
-<p>Sample App:</p>
-<a href="https://play.google.com/store/apps/details?id=com.amqtech.opensource.appintroexample&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-AC-global-none-all-co-pr-py-PartBadges-Oct1515-1"><img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/apps/en-play-badge-border.png" width="300" /></a>
+[![](https://jitpack.io/v/AppIntro/AppIntro.svg)](https://jitpack.io/#AppIntro/appintro) [![Build Status](https://travis-ci.org/AppIntro/AppIntro.svg?branch=master)](https://travis-ci.org/AppIntro/AppIntro) [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-AppIntro-green.svg?style=flat)](https://android-arsenal.com/details/1/1939) [![Join the chat at https://gitter.im/AppIntro/Lobby](https://badges.gitter.im/AppIntro/Lobby.svg)](https://gitter.im/AppIntro/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Awesome Kotlin Badge](https://kotlin.link/awesome-kotlin.svg)](https://github.com/KotlinBy/awesome-kotlin)
 
 # AppIntro
 AppIntro is an Android Library that helps you make a **cool intro** for your app, like the ones in Google apps.
 
-<img src="https://github.com/PaoloRotolo/AppIntro/blob/master/art/intro.png" width="300"> <img src="https://github.com/PaoloRotolo/AppIntro/blob/master/art/layout2.png" width="300">
+<img src="https://github.com/AppIntro/AppIntro/blob/master/art/intro.png" width="300"> <img src="https://github.com/AppIntro/AppIntro/blob/master/art/layout2.png" width="300">
 
 *Watch the [demo video](https://www.youtube.com/watch?v=-KgAAbZz248) on YouTube*
 
@@ -29,9 +24,19 @@ AppIntro is an Android Library that helps you make a **cool intro** for your app
 ```
 
 2. **Add the dependency**
+
+Please note that AppIntro supports [Android X](https://developer.android.com/jetpack/androidx/). If you haven't migrated yet, you probably want to use
+a previous version of the library that uses the **old Support Library** packages (or try [Jetifier Reverse mode](https://ncorti.com/blog/jetifier-reverse)).
+
 ```gradle
 	dependencies {
-	        compile 'com.github.apl-devs:appintro:v4.2.3'
+	        // AndroidX Capable version
+	        implementation 'com.github.AppIntro:AppIntro:5.1.0'
+	        
+	        // *** OR ***
+	        
+	        // Support Library compatibility version 
+	        implementation 'com.github.AppIntro:AppIntro:4.2.3'
 	}
 ```
 
@@ -52,9 +57,15 @@ public class IntroActivity extends AppIntro {
         addSlide(thirdFragment);
         addSlide(fourthFragment);
 
-        // Instead of fragments, you can also use our default slide
-        // Just set a title, description, background and image. AppIntro will do the rest.
-        addSlide(AppIntroFragment.newInstance(title, description, image, backgroundColor));
+        // Instead of fragments, you can also use our default slide.
+        // Just create a `SliderPage` and provide title, description, background and image.
+        // AppIntro will do the rest.
+        SliderPage sliderPage = new SliderPage();
+        sliderPage.setTitle(title);
+        sliderPage.setDescription(description);
+        sliderPage.setImageDrawable(image);
+        sliderPage.setBgColor(backgroundColor);
+        addSlide(AppIntroFragment.newInstance(sliderPage));
 
         // OPTIONAL METHODS
         // Override bar/separator color.
@@ -63,7 +74,7 @@ public class IntroActivity extends AppIntro {
 
         // Hide Skip/Done button.
         showSkipButton(false);
-        setProgressButtonEnabled(false);
+        setButtonsEnabled(false);
 
         // Turn vibration on and set intensity.
         // NOTE: you will probably need to ask VIBRATE permission in Manifest.
@@ -101,7 +112,7 @@ Finally, declare the activity in your Manifest like so:
 ```
 
 Do not declare the intro as your main app launcher unless you want the intro to launch every time your app starts.
-Refer to the [wiki](https://github.com/PaoloRotolo/AppIntro/wiki/How-to-Use#show-the-intro-once) for an example of how to launch the intro once from your main activity.
+Refer to the [wiki](https://github.com/AppIntro/AppIntro/wiki/How-to-Use#show-the-intro-once) for an example of how to launch the intro once from your main activity.
 
 #### Alternative layout
 If you want to try an alternative layout (as seen in Google's Photo app), just extend **AppIntro2** in your Activity. That's all :)
@@ -112,7 +123,7 @@ public class IntroActivity extends AppIntro2 {
 }
 ```
 
-<img src="https://github.com/PaoloRotolo/AppIntro/blob/master/art/layout2.png" width="300"> <img src="https://github.com/PaoloRotolo/AppIntro/blob/master/art/layout2_2.png" width="300">
+<img src="https://github.com/AppIntro/AppIntro/blob/master/art/layout2.png" width="300"> <img src="https://github.com/AppIntro/AppIntro/blob/master/art/layout2_2.png" width="300">
 <br>
 
 #### Slides
@@ -132,9 +143,12 @@ protected void onCreate(@Nullable Bundle savedInstanceState) {
 
 ##### Custom slides example
 
-One may also define custom slides as seen in the example project:
- * Copy the class **SampleSlide** from my [example project](https://github.com/paolorotolo/AppIntro/blob/master/example/src/main/java/com/amqtech/opensource/appintroexample/util/SampleSlide.java).
- * Add a new slide with `addSlide(SampleSlide.newInstance(R.layout.your_slide_here));`
+One may also define custom slides using the [AppIntroCustomLayoutSlide] class.
+You can just add a custom slides in this way:
+
+```java
+addSlide(AppIntroCustomLayoutSlide.newInstance(R.layout.your_slide_here));
+```
 
 There's no need to create one class for fragment anymore. :)
 
@@ -173,7 +187,7 @@ protected void onCreate(@Nullable Bundle savedInstanceState) {
 }
 ```
 
-Click [here](https://github.com/PaoloRotolo/AppIntro/blob/90a513fda9b70a5e5df35435a7f2984832727eeb/AppIntroExample/app/src/main/java/com/github/paolorotolo/appintroexample/animations/CustomAnimation.java) to see how I did it in the example app.
+Click [here](https://github.com/AppIntro/AppIntro/blob/90a513fda9b70a5e5df35435a7f2984832727eeb/AppIntroExample/app/src/main/java/com/github/appintro/example/animations/CustomAnimation.java) to see how I did it in the example app.
 
 #### Background color transitions
 
@@ -208,7 +222,7 @@ This is normally the root view of your Fragment's layout. But one may also apply
 
 #### Runtime Permissions (Android 6.0+)
 
-<img src="https://github.com/PaoloRotolo/AppIntro/blob/master/art/permissions.png" width="300">
+<img src="https://github.com/AppIntro/AppIntro/blob/master/art/permissions.png" width="300">
 
 Android 6.0 introduced a new permissions model for developers. Now all your apps have to request permissions which can be a tedious thing to implement.
 
@@ -255,23 +269,45 @@ The interface contains two methods:
 - `isPolicyRespected`: The return value of this method defines if the user can leave this slide, i.e. navigate to another one
 - `onUserIllegallyRequestedNextPage`: This method gets called if the user tries to leave the slide although `isPolicyRespected` returned false. One may show some error message here.
 
+## Translating
+
+Do you want to help AppIntro becoming international 🌍? We are more than happy!
+AppIntro currently supports [the following languages](appintro/src/main/res).
+
+To add a new translation just add a pull request with a new `strings.xml` file inside a `values-xx` folder (where `xx` is a [two-letter ISO 639-1 language code](https://en.wikipedia.org/wiki/ISO_639-1)).
+
+In order to provide the translation, your file needs to contain the following strings:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_intro_skip_button">[Translation for SKIP]</string>
+    <string name="app_intro_next_button">[Translation for NEXT]</string>
+    <string name="app_intro_back_button">[Translation for BACK]</string>
+    <string name="app_intro_done_button">[Translation for DONE]</string>
+    <string name="app_intro_image_content_description">[Translation for "graphics"]</string>
+</resources>
+```
+
+An updated version of the english version translation is [available here](appintro/src/main/res/values/strings.xml).
+
 ## Example App
-See example code [here](https://github.com/PaoloRotolo/AppIntro/tree/master/example) on GitHub. You can also see it live by downloading our example on [Google Play](https://play.google.com/store/apps/details?id=com.amqtech.opensource.appintroexample).
+A working example app is available [here](https://github.com/AppIntro/AppIntro/tree/master/example).
 
 ## Real life examples
 Do you need inspiration? A lot of apps are using AppIntro out there:
 
 **Planets**
 
-<img src="https://github.com/PaoloRotolo/AppIntro/blob/master/art/planets.png">
+<img src="https://github.com/AppIntro/AppIntro/blob/master/art/planets.png">
 
 **Hermes - Material IRC Client**
 
-<img src="https://github.com/PaoloRotolo/AppIntro/blob/master/art/Screenshot_2015-06-03-12-41-59.png" width="300"> <img src="https://github.com/PaoloRotolo/AppIntro/blob/master/art/Screenshot_2015-06-03-12-42-02.png" width="300">
-<img src="https://github.com/PaoloRotolo/AppIntro/blob/master/art/Screenshot_2015-06-03-12-42-07.png" width="300"> <img src="https://github.com/PaoloRotolo/AppIntro/blob/master/art/Screenshot_2015-06-03-12-42-10.png" width="300">
+<img src="https://github.com/AppIntro/AppIntro/blob/master/art/Screenshot_2015-06-03-12-41-59.png" width="300"> <img src="https://github.com/AppIntro/AppIntro/blob/master/art/Screenshot_2015-06-03-12-42-02.png" width="300">
+<img src="https://github.com/AppIntro/AppIntro/blob/master/art/Screenshot_2015-06-03-12-42-07.png" width="300"> <img src="https://github.com/AppIntro/AppIntro/blob/master/art/Screenshot_2015-06-03-12-42-10.png" width="300">
 
 ## Apps using AppIntro
-If you are using AppIntro in your app and would like to be listed here, please let us know by commenting in [this issue](https://github.com/PaoloRotolo/AppIntro/issues/325)!
+If you are using AppIntro in your app and would like to be listed here, please let us know by commenting in [this issue](https://github.com/AppIntro/AppIntro/issues/325)!
 
  * [Numix Hermes](https://play.google.com/store/apps/details?id=org.numixproject.hermes)
  * [Audio Reminder Pro](https://play.google.com/store/apps/details?id=com.brandon.audioreminderpro)
@@ -329,3 +365,5 @@ If you are using AppIntro in your app and would like to be listed here, please l
  * [BeatPrompter](https://play.google.com/store/apps/details?id=com.stevenfrew.beatprompter)
  * [Orario Treni Trenitalia](https://play.google.com/store/apps/details?id=com.jaus.albertogiunta.justintrain_oraritreni)
  * [Tipsy for Gardaland](https://play.google.com/store/apps/details?id=com.MonkeyLab.MyGardaland&hl=it)
+ * [BlueWords](https://play.google.com/store/apps/details?id=com.thesrb.bluewords&referrer=utm_source%3Dappintro%26utm_medium%3Dgithub%26utm_campaign%3Dreadme)
+  * [Best Quotes & Status 2019 (99000+ Collection)](https://play.google.com/store/apps/details?id=com.swastik.quotesandstatus&hl=en_IN)
