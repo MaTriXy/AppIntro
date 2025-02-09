@@ -2,8 +2,7 @@ package com.github.appintro.indicator
 
 import android.content.Context
 import android.view.View
-
-internal const val DEFAULT_COLOR = 1
+import androidx.annotation.ColorInt
 
 /**
  * A controller that is used to provide custom indicator implementations and to control
@@ -11,9 +10,10 @@ internal const val DEFAULT_COLOR = 1
  * [AppIntro2.setCustomIndicator]
  */
 interface IndicatorController {
-
+    @get:ColorInt
     var selectedIndicatorColor: Int
 
+    @get:ColorInt
     var unselectedIndicatorColor: Int
 
     /**

@@ -11,9 +11,8 @@ import java.io.Serializable
 internal data class PermissionWrapper(
     var permissions: Array<String>,
     var position: Int,
-    var required: Boolean = true
+    var required: Boolean = true,
 ) : Serializable {
-
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
@@ -32,5 +31,9 @@ internal data class PermissionWrapper(
         result = 31 * result + position
         result = 31 * result + required.hashCode()
         return result
+    }
+
+    companion object {
+        private const val serialVersionUID: Long = 1L
     }
 }

@@ -1,6 +1,7 @@
 package com.github.appintro.model
 
 import androidx.annotation.ColorInt
+import androidx.annotation.ColorRes
 import androidx.annotation.DrawableRes
 import androidx.annotation.FontRes
 
@@ -10,35 +11,43 @@ import androidx.annotation.FontRes
  * a [SliderPage] directly.
  */
 class SliderPagerBuilder {
-
     private var title: CharSequence? = null
 
     private var description: CharSequence? = null
 
     @DrawableRes
-    private var imageDrawable: Int = 0
+    private var imageDrawable: Int? = null
 
     @ColorInt
-    private var bgColor: Int = 0
+    private var backgroundColor: Int? = null
 
-    @DrawableRes
-    private var bgDrawable: Int = 0
-
-    @ColorInt
-    private var titleColor: Int = 0
+    @ColorRes
+    private var backgroundColorRes: Int? = null
 
     @ColorInt
-    private var descColor: Int = 0
+    private var titleColor: Int? = null
+
+    @ColorRes
+    private var titleColorRes: Int? = null
+
+    @ColorInt
+    private var descriptionColor: Int? = null
+
+    @ColorRes
+    private var descriptionColorRes: Int? = null
+
+    @FontRes
+    private var titleTypefaceFontRes: Int? = null
+
+    @FontRes
+    private var descriptionTypefaceFontRes: Int? = null
 
     private var titleTypeface: String? = null
 
-    private var descTypeface: String? = null
+    private var descriptionTypeface: String? = null
 
-    @FontRes
-    private var titleTypefaceRes: Int = 0
-
-    @FontRes
-    private var descTypefaceRes: Int = 0
+    @DrawableRes
+    private var backgroundDrawable: Int? = null
 
     fun title(title: CharSequence): SliderPagerBuilder {
         this.title = title
@@ -50,28 +59,78 @@ class SliderPagerBuilder {
         return this
     }
 
-    fun imageDrawable(imageDrawable: Int): SliderPagerBuilder {
+    fun imageDrawable(
+        @DrawableRes imageDrawable: Int,
+    ): SliderPagerBuilder {
         this.imageDrawable = imageDrawable
         return this
     }
 
-    fun bgColor(bgColor: Int): SliderPagerBuilder {
-        this.bgColor = bgColor
+    @Deprecated(
+        "`backgroundColor(...)` has been deprecated to support configuration changes",
+        ReplaceWith("backgroundColorRes(backgroundColor)"),
+    )
+    fun backgroundColor(
+        @ColorInt backgroundColor: Int,
+    ): SliderPagerBuilder {
+        this.backgroundColor = backgroundColor
         return this
     }
 
-    fun bgDrawable(bgDrawable: Int): SliderPagerBuilder {
-        this.bgDrawable = bgDrawable
+    fun backgroundColorRes(
+        @ColorRes backgroundColorRes: Int,
+    ): SliderPagerBuilder {
+        this.backgroundColorRes = backgroundColorRes
         return this
     }
 
-    fun titleColor(titleColor: Int): SliderPagerBuilder {
+    @Deprecated(
+        "`titleColor(...)` has been deprecated to support configuration changes",
+        ReplaceWith("titleColorRes(titleColor)"),
+    )
+    fun titleColor(
+        @ColorInt titleColor: Int,
+    ): SliderPagerBuilder {
         this.titleColor = titleColor
         return this
     }
 
-    fun descColor(descColor: Int): SliderPagerBuilder {
-        this.descColor = descColor
+    fun titleColorRes(
+        @ColorRes titleColorRes: Int,
+    ): SliderPagerBuilder {
+        this.titleColorRes = titleColorRes
+        return this
+    }
+
+    @Deprecated(
+        "`descriptionColor(...)` has been deprecated to support configuration changes",
+        ReplaceWith("descriptionColorRes(descriptionColor)"),
+    )
+    fun descriptionColor(
+        @ColorInt descriptionColor: Int,
+    ): SliderPagerBuilder {
+        this.descriptionColor = descriptionColor
+        return this
+    }
+
+    fun descriptionColorRes(
+        @ColorRes descriptionColorRes: Int,
+    ): SliderPagerBuilder {
+        this.descriptionColorRes = descriptionColorRes
+        return this
+    }
+
+    fun titleTypefaceFontRes(
+        @FontRes titleTypefaceFontRes: Int,
+    ): SliderPagerBuilder {
+        this.titleTypefaceFontRes = titleTypefaceFontRes
+        return this
+    }
+
+    fun descriptionTypefaceFontRes(
+        @FontRes descriptionTypefaceFontRes: Int,
+    ): SliderPagerBuilder {
+        this.descriptionTypefaceFontRes = descriptionTypefaceFontRes
         return this
     }
 
@@ -80,32 +139,33 @@ class SliderPagerBuilder {
         return this
     }
 
-    fun titleTypefaceRes(@FontRes titleTypefaceRes: Int): SliderPagerBuilder {
-        this.titleTypefaceRes = titleTypefaceRes
+    fun descriptionTypeface(descriptionTypeface: String): SliderPagerBuilder {
+        this.descriptionTypeface = descriptionTypeface
         return this
     }
 
-    fun descTypeface(descTypeface: String): SliderPagerBuilder {
-        this.descTypeface = descTypeface
+    fun backgroundDrawable(
+        @DrawableRes backgroundDrawable: Int,
+    ): SliderPagerBuilder {
+        this.backgroundDrawable = backgroundDrawable
         return this
     }
 
-    fun descTypefaceRes(@FontRes descTypefaceRes: Int): SliderPagerBuilder {
-        this.descTypefaceRes = descTypefaceRes
-        return this
-    }
-
-    fun build() = SliderPage(
-        title = this.title,
-        description = this.description,
-        imageDrawable = this.imageDrawable,
-        bgDrawable = this.bgDrawable,
-        bgColor = this.bgColor,
-        titleColor = this.titleColor,
-        descColor = this.descColor,
-        titleTypeface = this.titleTypeface,
-        titleTypefaceFontRes = this.titleTypefaceRes,
-        descTypeface = this.descTypeface,
-        descTypefaceFontRes = this.descTypefaceRes
-    )
+    fun build() =
+        SliderPage(
+            title = this.title,
+            description = this.description,
+            imageDrawable = this.imageDrawable,
+            backgroundColor = this.backgroundColor,
+            backgroundColorRes = this.backgroundColorRes,
+            titleColor = this.titleColor,
+            titleColorRes = this.titleColorRes,
+            descriptionColor = this.descriptionColor,
+            descriptionColorRes = this.descriptionColorRes,
+            titleTypefaceFontRes = this.titleTypefaceFontRes,
+            descriptionTypeface = this.descriptionTypeface,
+            titleTypeface = this.titleTypeface,
+            descriptionTypefaceFontRes = this.descriptionTypefaceFontRes,
+            backgroundDrawable = this.backgroundDrawable,
+        )
 }
